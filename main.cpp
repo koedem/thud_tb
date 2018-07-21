@@ -6,7 +6,7 @@ using namespace std;
 int main() {
     long count[9][9][9][9][9][9] = { 0 };
     sizeEstimator::setupEstimation();
-    sizeEstimator::countWithSymmetries(true, true, false, count);
+    sizeEstimator::countWithSymmetries(true, true, true, count);
     long files[30] = { 0 };
     long efficiency[30] = { 0 };
     for (int bitSum = 1; bitSum < 30; bitSum++) {

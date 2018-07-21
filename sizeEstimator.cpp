@@ -99,13 +99,19 @@ int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry
                             oldBitCount = bitTable[diff[0]] + bitTable[diff[1]] + bitTable[diff[2]] + bitTable[diff[3]]
                                     + bitTable[diff[4]] + bitTable[diff[5]];
 
-                            if (reverseSymmetry) {
-                                transformedSquare[0] = symmetryTable[0][i];
-                                transformedSquare[1] = symmetryTable[0][j];
-                                transformedSquare[2] = symmetryTable[0][k];
-                                transformedSquare[3] = symmetryTable[0][l];
-                                transformedSquare[4] = symmetryTable[0][m];
-                                transformedSquare[5] = symmetryTable[0][n];
+                            for (int b = 0; b < 3; b++) {
+                                if (b % 2 == 0 && !reverseSymmetry) {
+                                    continue;
+                                }
+                                if (b > 0 && !rotationSymmetry) {
+                                    break;
+                                }
+                                transformedSquare[0] = symmetryTable[b][i];
+                                transformedSquare[1] = symmetryTable[b][j];
+                                transformedSquare[2] = symmetryTable[b][k];
+                                transformedSquare[3] = symmetryTable[b][l];
+                                transformedSquare[4] = symmetryTable[b][m];
+                                transformedSquare[5] = symmetryTable[b][n];
                                 std::sort(std::begin(transformedSquare), std::end(transformedSquare));
                                 tempDiff[0] = transformedSquare[0] - (-1);
                                 tempDiff[1] = transformedSquare[1] - transformedSquare[0];
@@ -117,7 +123,9 @@ int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry
 
 
                                 if (simpleSymmetry && (tempDiff[6] < tempDiff[0] || tempDiff[6] == tempDiff[0] &&
-                                        (tempDiff[5] < tempDiff[1] || tempDiff[5] == tempDiff[1] && tempDiff[4] < tempDiff[2]))) {
+                                                                                    (tempDiff[5] < tempDiff[1] ||
+                                                                                     tempDiff[5] == tempDiff[1] &&
+                                                                                     tempDiff[4] < tempDiff[2]))) {
                                     temp = tempDiff[6];
                                     tempDiff[6] = tempDiff[0];
                                     tempDiff[0] = temp;
@@ -129,19 +137,28 @@ int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry
                                     tempDiff[2] = temp;
                                 }
                                 newBitCount = bitTable[tempDiff[0]] + bitTable[tempDiff[1]] + bitTable[tempDiff[2]]
-                                        + bitTable[tempDiff[3]] + bitTable[tempDiff[4]] + bitTable[tempDiff[5]];
-                                if (newBitCount < oldBitCount || newBitCount == oldBitCount && (tempDiff[0] < diff[0]
-                                    || tempDiff[0] == diff[0] && (tempDiff[1] < diff[1] || tempDiff[1] == diff[1] && (tempDiff[2] < diff[2]
-                                    || tempDiff[2] == diff[2] && (tempDiff[3] < diff[3] || tempDiff[3] == diff[3] && (tempDiff[4] < diff[4]
-                                    || tempDiff[4] == diff[4] && (tempDiff[5] < diff[5] || tempDiff[5] == diff[5] && tempDiff[6] < diff[6]))))))) {
+                                              + bitTable[tempDiff[3]] + bitTable[tempDiff[4]] +
+                                              bitTable[tempDiff[5]];
+                                if (newBitCount < oldBitCount ||
+                                    newBitCount == oldBitCount && (tempDiff[0] < diff[0]
+                                                                   || tempDiff[0] == diff[0] &&
+                                                                      (tempDiff[1] < diff[1] ||
+                                                                       tempDiff[1] == diff[1] &&
+                                                                       (tempDiff[2] < diff[2]
+                                                                        || tempDiff[2] == diff[2] &&
+                                                                           (tempDiff[3] < diff[3] ||
+                                                                            tempDiff[3] == diff[3] &&
+                                                                            (tempDiff[4] < diff[4]
+                                                                             || tempDiff[4] == diff[4] &&
+                                                                                (tempDiff[5] < diff[5] ||
+                                                                                 tempDiff[5] == diff[5] &&
+                                                                                 tempDiff[6] < diff[6]))))))) {
                                     oldBitCount = newBitCount;
                                     for (int a = 0; a < 7; a++) {
                                         diff[a] = tempDiff[a];
                                     }
                                 }
                             }
-
-
 
                             count[bitTable[diff[0]]][bitTable[diff[1]]][bitTable[diff[2]]][bitTable[diff[3]]]
                             [bitTable[diff[4]]][bitTable[diff[5]]]++;
