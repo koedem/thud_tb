@@ -3,6 +3,7 @@
 //
 
 #include "sizeEstimator.h"
+#include <algorithm>
 #include <array>
 #include <iostream>
 
@@ -60,10 +61,12 @@ void sizeEstimator::zeroArray(long count[9][9][9][9][9][9]) {
     }
 }
 
-int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry, bool fullSymmetry, long count[9][9][9][9][9][9]) {
+int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry, bool rotationSymmetry, long count[9][9][9][9][9][9]) {
     sizeEstimator::zeroArray(count);
-    int diff[7] = { 0 };
-    int tempDiff[7] = { 0 };
+    std::array<int, 7> diff = { 0 };
+    std::array<int, 7> tempDiff = { 0 };
+    std::array<int, 6> transformedSquare = { 0 };
+    int temp, oldBitCount, newBitCount;
 
     for (int i = 0; i < 159; i++) {
         for (int j = i + 1; j < 160; j++) {
@@ -93,17 +96,49 @@ int sizeEstimator::countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry
                                     diff[a] = tempDiff[a];
                                 }
                             }
+                            oldBitCount = bitTable[diff[0]] + bitTable[diff[1]] + bitTable[diff[2]] + bitTable[diff[3]]
+                                    + bitTable[diff[4]] + bitTable[diff[5]];
 
                             if (reverseSymmetry) {
-                                tempDiff[0] = symmetryTable[0][i] - (-1);
-                                tempDiff[1] = symmetryTable[0][j] - symmetryTable[0][i];
-                                tempDiff[2] = symmetryTable[0][k] - symmetryTable[0][j];
-                                tempDiff[3] = symmetryTable[0][l] - symmetryTable[0][k];
-                                tempDiff[4] = symmetryTable[0][m] - symmetryTable[0][l];
-                                tempDiff[5] = symmetryTable[0][n] - symmetryTable[0][m];
-                                tempDiff[6] = symmetryTable[0][163] + 1 - symmetryTable[0][n];
+                                transformedSquare[0] = symmetryTable[0][i];
+                                transformedSquare[1] = symmetryTable[0][j];
+                                transformedSquare[2] = symmetryTable[0][k];
+                                transformedSquare[3] = symmetryTable[0][l];
+                                transformedSquare[4] = symmetryTable[0][m];
+                                transformedSquare[5] = symmetryTable[0][n];
+                                std::sort(std::begin(transformedSquare), std::end(transformedSquare));
+                                tempDiff[0] = transformedSquare[0] - (-1);
+                                tempDiff[1] = transformedSquare[1] - transformedSquare[0];
+                                tempDiff[2] = transformedSquare[2] - transformedSquare[1];
+                                tempDiff[3] = transformedSquare[3] - transformedSquare[2];
+                                tempDiff[4] = transformedSquare[4] - transformedSquare[3];
+                                tempDiff[5] = transformedSquare[5] - transformedSquare[4];
+                                tempDiff[6] = 164 - transformedSquare[5];
 
 
+                                if (simpleSymmetry && (tempDiff[6] < tempDiff[0] || tempDiff[6] == tempDiff[0] &&
+                                        (tempDiff[5] < tempDiff[1] || tempDiff[5] == tempDiff[1] && tempDiff[4] < tempDiff[2]))) {
+                                    temp = tempDiff[6];
+                                    tempDiff[6] = tempDiff[0];
+                                    tempDiff[0] = temp;
+                                    temp = tempDiff[5];
+                                    tempDiff[5] = tempDiff[1];
+                                    tempDiff[1] = temp;
+                                    temp = tempDiff[4];
+                                    tempDiff[4] = tempDiff[2];
+                                    tempDiff[2] = temp;
+                                }
+                                newBitCount = bitTable[tempDiff[0]] + bitTable[tempDiff[1]] + bitTable[tempDiff[2]]
+                                        + bitTable[tempDiff[3]] + bitTable[tempDiff[4]] + bitTable[tempDiff[5]];
+                                if (newBitCount < oldBitCount || newBitCount == oldBitCount && (tempDiff[0] < diff[0]
+                                    || tempDiff[0] == diff[0] && (tempDiff[1] < diff[1] || tempDiff[1] == diff[1] && (tempDiff[2] < diff[2]
+                                    || tempDiff[2] == diff[2] && (tempDiff[3] < diff[3] || tempDiff[3] == diff[3] && (tempDiff[4] < diff[4]
+                                    || tempDiff[4] == diff[4] && (tempDiff[5] < diff[5] || tempDiff[5] == diff[5] && tempDiff[6] < diff[6]))))))) {
+                                    oldBitCount = newBitCount;
+                                    for (int a = 0; a < 7; a++) {
+                                        diff[a] = tempDiff[a];
+                                    }
+                                }
                             }
 
 

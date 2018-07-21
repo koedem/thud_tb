@@ -8,7 +8,7 @@
 
 class sizeEstimator {
 public:
-    static int countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry, bool fullSymmetry, long count[9][9][9][9][9][9]);
+    static int countWithSymmetries(bool simpleSymmetry, bool reverseSymmetry, bool rotationSymmetry, long count[9][9][9][9][9][9]);
     static void setupEstimation();
 
 private:
